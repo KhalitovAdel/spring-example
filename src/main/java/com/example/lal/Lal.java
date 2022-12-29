@@ -1,14 +1,18 @@
 package com.example.lal;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class Lal {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     private String name;
+
+    public Long getId() {
+        return this.id;
+    }
 
     public String getName() {
         return this.name;
