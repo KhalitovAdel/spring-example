@@ -1,20 +1,31 @@
 package com.example.lal;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 public class Lal {
-    @Id
-    @GeneratedValue
+
+    public enum LalType {
+        FIRST, SECOND, THIRD
+    }
+    
+    @Id @GeneratedValue @Getter 
     private Long id;
 
+    @Getter
     private String name;
 
-    public Long getId() {
-        return this.id;
+    @Getter @Enumerated(EnumType.STRING)
+    private LalType type;
+
+    public Lal() {
+        this.name = "emptyName";
+        this.type = LalType.FIRST;
     }
 
-    public String getName() {
-        return this.name;
+    public Lal(String name, LalType type) {
+        this.name = name;
+        this.type = type;
     }
 }
