@@ -12,23 +12,36 @@ import org.springframework.data.domain.Pageable;
 
 @SpringBootTest
 public class LalRepositoryTests {
-
-    @Autowired
-    private LalRepository repository;
+    @Autowired private LalRepository repository;
 
     @BeforeAll 
-    static void beforeAll(@Autowired LalRepository repository) {
-        Lal e1 = new Lal("e1", Lal.LalType.FIRST);
-        Lal e2 = new Lal("e2", Lal.LalType.SECOND);
-        Lal e3 = new Lal("e3", Lal.LalType.THIRD);
-        List<Lal> list = Arrays.asList(e1, e2, e3);
+    static void beforeAll(
+        @Autowired LalRepository repository,
+        @Autowired KekRepository kekRepo
+    ) {
+        Lal l1 = new Lal("l1", Lal.LalType.FIRST);
+        Lal l2 = new Lal("l2", Lal.LalType.SECOND);
+        Lal l3 = new Lal("l3", Lal.LalType.THIRD);
+        List<Lal> ll = Arrays.asList(l1, l2, l3);
 
-        repository.saveAll(list);
+        Kek k1 = new Kek("k1");
+        Kek k2 = new Kek("k2");
+
+        List<Kek> kl = Arrays.asList(k1, k2);
+
+        kekRepo.saveAll(kl);
+        l1.addKek(k1).addKek(k2);
+
+        repository.saveAll(ll);
     }
 
     @AfterAll 
-    static void afterAll(@Autowired LalRepository repository) {
+    static void afterAll(
+        @Autowired LalRepository repository,
+        @Autowired KekRepository kekRepo
+    ) {
         repository.deleteAll();
+        kekRepo.deleteAll();
     }
 
     @Test
@@ -39,7 +52,7 @@ public class LalRepositoryTests {
     @Test
     void findByType() {
         Pageable p = PageRequest.of(0, 20);
-        Page<Lal> l1 = repository.findByNameContaining("e", p);
+        Page<Lal> l1 = repository.findByNameContaining("l", p);
         assertEquals(l1.getContent().size(), 3);
     }
 
@@ -48,5 +61,18 @@ public class LalRepositoryTests {
         List<Lal.LalType> types = Arrays.asList(Lal.LalType.FIRST, Lal.LalType.SECOND);
         Lal[] l1 = repository.findByType(types);
         assertEquals(l1.length, 2);
+    }
+
+    @Test
+    void findWithRelations() {
+        Pageable p = PageRequest.of(0, 20);
+        Page<Lal> l1 = repository.findAllWithRelation(p);
+        List<Lal> c = l1.getContent();
+        assertEquals(c.size(), 3);
+
+        List<Kek> kl = c.get(0).getKeks();
+        assertNotNull(kl);
+        Kek k = kl.get(0);
+        assertNotNull(k);
     }
 }

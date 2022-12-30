@@ -15,4 +15,8 @@ public interface LalRepository extends CrudRepository<Lal, Long> {
     // https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.at-query
     @Query("select u from Lal u where u.type in :t")
     Lal[] findByType(@Param("t") List<Lal.LalType> types);
+
+    // https://www.baeldung.com/spring-boot-lazy-initialization
+    @Query("select l from Lal l left join fetch Kek k")
+    Page<Lal> findAllWithRelation(Pageable pageable);
 }
